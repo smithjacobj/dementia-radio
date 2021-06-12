@@ -94,4 +94,3 @@ red_button.when_released = OnRedButton
 while True:
     RunPlayWatchdog()
     sleep(0.1)
-
