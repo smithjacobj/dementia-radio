@@ -66,8 +66,6 @@ def RunPlayWatchdog():
         finally:
             play_handle = None
 
-
-
 def SetVolume(value):
     subprocess.run(["amixer", "sset", "'Master'", "{}%".format(value)])
     print("volume set to {}%".format(value))
