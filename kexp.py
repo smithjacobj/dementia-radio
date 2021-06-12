@@ -8,8 +8,6 @@ import subprocess
 PLAYER_BIN = "mpg123"
 STREAM_URIS = ["http://live-mp3-128.kexp.org/kexp128.mp3", "http://216.246.37.218/kexp128-backup.mp3"]
 
-FORCED_STREAM_TIMEOUT = 15 # seconds
-
 is_playing = False
 play_handle = None
 current_stream_uri = 0 
@@ -23,20 +21,9 @@ def PlayStream(uri):
 
 def Stop():
     global is_playing
-    global play_handle
 
-    if play_handle is None:
-        return # nothing to stop
-
-    try:
-        play_handle.terminate()
-        play_handle.wait(3)
-    except TimeoutExpired:
-        play_handle.kill()
-    finally:
-        play_handle = None
-        is_playing = False
- 
+    is_playing = False
+     
 def Play():
     global is_playing
 
@@ -66,10 +53,28 @@ def RunPlayWatchdog():
             if play_handle.returncode is not 0:
                 Log("stream failure, error code {}, stderr: {}".format(play_handle.returncode, play_handle.stderr.read()))
 
+    # stream stopped
+    if not is_playing and play_handle is not None:
+        if play_handle is None:
+            return # nothing to stop
+
+        try:
+            play_handle.terminate()
+            play_handle.wait(3)
+        except TimeoutExpired:
+            play_handle.kill()
+        finally:
+            play_handle = None
+
+
+
+def SetVolume(value):
+    subprocess.run(["amixer", "sset", "'Master'", "{}%".format(value)])
+    print("volume set to {}%".format(value))
+
 def WhenVolumeRotated():
-    volume_value = next(scaled(volume_encoder.values, 0, 100, -1.0, 1.0))
-    print("volume set to {}%".format(volume_value))
-    subprocess.run(["amixer", "sset", "'Master'", "{}%".format(volume_value)])
+    volume_value = next(scaled(volume_encoder.values, 10, 100, -1.0, 1.0))
+    SetVolume(volume_value)
     Play() # setting the volume should also trigger if it's not playing
 
 def OnGreenButton():
@@ -83,6 +88,7 @@ def OnRedButton():
 # procedural script & loop
 volume_encoder = RotaryEncoder(24, 22, max_steps=20)
 volume_encoder.when_rotated = WhenVolumeRotated
+SetVolume(50)
 
 green_button = Button(17)
 green_button.when_released = OnGreenButton
