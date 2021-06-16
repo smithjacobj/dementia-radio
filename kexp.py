@@ -66,9 +66,6 @@ def RunPlayWatchdog():
 
     # stream stopped
     if not is_playing and play_handle is not None:
-        if play_handle is None:
-            return # nothing to stop
-
         try:
             play_handle.terminate()
             play_handle.wait(3)
