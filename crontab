@@ -21,5 +21,5 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-@reboot sleep 10 && /usr/bin/python3 /home/pi/kexp.py
-@reboot sleep 10 && /usr/bin/autossh -f -i /home/pi/.ssh/id_rsa -N -R 16022:localhost:22 user@host -tt -o "ExitOnForwardFailure=yes" -o "CheckHostIP=no" -o "StrictHostKeyChecking=no"
+@reboot sleep 10 && /home/pi/kexp.sh
+@reboot sleep 10 && /usr/bin/autossh -f -i /home/pi/.ssh/id_rsa -N -R 16022:localhost:22 user@host -tt -o "ExitOnForwardFailure=yes" -o "CheckHostIP=no" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=300"
