@@ -17,9 +17,6 @@
 :ufw6-user-limit-accept - [0:0]
 ### RULES ###
 
-### tuple ### deny any any ::/0 any ::/0 out_usb0
--A ufw6-user-output -o usb0 -j DROP
-
 ### tuple ### allow tcp 22 ::/0 any ::/0 OpenSSH - in
 -A ufw6-user-input -p tcp --dport 22 -j ACCEPT -m comment --comment 'dapp_OpenSSH'
 
@@ -43,6 +40,13 @@
 ### tuple ### allow any 22 ::/0 any ::/0 out
 -A ufw6-user-output -p tcp --dport 22 -j ACCEPT
 -A ufw6-user-output -p udp --dport 22 -j ACCEPT
+
+### tuple ### allow any 53 ::/0 any ::/0 DNS - out
+-A ufw6-user-output -p tcp --dport 53 -j ACCEPT -m comment --comment 'dapp_DNS'
+-A ufw6-user-output -p udp --dport 53 -j ACCEPT -m comment --comment 'dapp_DNS'
+
+### tuple ### deny any any ::/0 any ::/0 out_usb0
+-A ufw6-user-output -o usb0 -j DROP
 
 ### END RULES ###
 
