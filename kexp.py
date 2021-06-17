@@ -49,7 +49,7 @@ def RunPlayWatchdog():
     # start or re-start the stream
     if is_playing and play_handle is None:
         if not is_restarting:
-            SetVolume(START_VOLUME)
+            ResetVolume(START_VOLUME)
             Log("starting stream")
         else:
             Log("restarting stream")
@@ -87,6 +87,12 @@ def RunPlayWatchdog():
 def SetVolume(value):
     subprocess.run(["amixer", "sset", "'Master'", "{}%".format(value)])
     Log("volume set to {}%".format(value))
+
+def ResetVolume(value):
+    global volume_encoder
+
+    SetVolume(value)
+    volume_encoder.value = next(scaled([value], -1.0, 1.0, MIN_VOLUME, MAX_VOLUME))
 
 def WhenVolumeRotated():
     volume_value = next(scaled(volume_encoder.values, MIN_VOLUME, MAX_VOLUME, -1.0, 1.0))
